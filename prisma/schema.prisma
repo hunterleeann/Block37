@@ -18,3 +18,15 @@ model User {
   email String  @unique
   password  String
 }
+
+model Review {
+  id    String     @id @default(uuid())
+  score Int  
+  text  String
+}
+
+model Item { CHECK FIRST 
+  id    String     @id @default(uuid())
+  email String  @unique
+  password  String
+}
