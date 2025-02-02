@@ -21,12 +21,14 @@ model User {
 
 model Review {
   id    String     @id @default(uuid())
+  itemId String //key 
   score Int  
-  text  String
+  text  String 
+  item   Item @relation(fields: [itemId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
-model Item { CHECK FIRST 
+model Item {  
   id    String     @id @default(uuid())
-  email String  @unique
-  password  String
+  name String  @unique 
+ reviews Review[]  // One-to-Many relationship
 }

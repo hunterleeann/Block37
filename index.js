@@ -7,7 +7,15 @@ const bcrypt = require("bcrypt");
 const JWT_SECRET = process.env.JWT_SECRET || "1234";
 const jwt = require("jsonwebtoken");
 
-const { createNewUser, getUser, getCustomer } = require("./db");
+const {
+  createNewUser,
+  getUser,
+  getCustomer,
+  createItem,
+  getItems,
+  itemReviews,
+  getItemReview,
+} = require("./db");
 
 const setToken = (id) => {
   return jwt.sign({ id }, JWT_SECRET, { expiresIn: "8h" });
@@ -51,6 +59,54 @@ app.post("/api/auth/login", async (req, res, next) => {
     } else {
       res.status(403).json({ message: "Username and Password do not match" });
     }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// app.get("/api/auth/me", async (req, res, next) => {
+// try {
+
+// } catch (error) {
+//     next(error);
+// }
+// });
+
+app.get("/api/items", async (req, res, next) => {
+  try {
+    const response = await createItem();
+    res.status(200).send(response);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/items/:id", async (req, res, next) => {
+  try {
+    const { id } = req.body;
+    const selectedItem = await getItems(id);
+    res.status(200).send(selectedItem);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/items/:itemId/reviews", async (req, res, next) => {
+  try {
+    const { id, text, score } = req.body;
+    //   const { text } = req.body;
+    const response = await itemReviews(text, score, id);
+    res.status(200).send(response);
+  } catch (error) {
+    next(error);
+  }
+});
+app.get("/api/items/:itemId/reviews", async (req, res, next) => {
+  try {
+    const { itemId } = req.body;
+    //   const { text } = req.body;
+    const response = await itemReviews(itemId);
+    res.status(200).send(response);
   } catch (error) {
     next(error);
   }
