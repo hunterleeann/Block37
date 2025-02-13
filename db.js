@@ -44,7 +44,12 @@ const createItem = async () => {
   return response;
 };
 
-const getItems = async (id) => {
+const getItems = async () => {
+  const response = await prisma.Item.findMany({});
+  return response;
+};
+
+const getItem = async (id) => {
   const response = await prisma.Item.findFirstOrThrow({
     where: {
       id,
@@ -53,29 +58,68 @@ const getItems = async (id) => {
   return response;
 };
 
-const itemReviews = async (itemId) => {
-    const response = await prisma.Review.findFirstOrThrow({
-      where: {
-        itemId,
-      },
-    });
-    return response;
-  };
+const getItemReview = async (itemId) => {
+  const response = await prisma.Review.findMany({
+    where: {
+      itemId,
+    },
+  });
+  return response;
+};
 
-const getItemReview = async (id, text, score) => {
-  const response = await prisma.review.findFirstOrThrow({
+const itemReviews = async (itemId, userId, text, score) => {
+  const response = await prisma.Review.create({
     data: {
-      text,
       score,
-      where: {
-        item: {
-          connect: { id },
-        },
+      text,
+      item: {
+        connect: { id: itemId },
+      },
+      user: {
+        connect: { id: userId },
       },
     },
   });
   return response;
 };
+
+const userReviews = async (userId) => {
+  const response = await prisma.Review.findMany({
+    where: {
+      userId,
+    },
+  });
+  return response;
+};
+
+const getItemRevId = async (reviewId, itemId) => {
+  const response = await prisma.Review.findFirstOrThrow({
+    where: {
+      id: reviewId,
+      itemId: itemId,
+    },
+  });
+  return response;
+};
+
+//Comments ROUTE: POST /api/items/:itemId/reviews/:reviewId/comments 🔒
+
+const getComment = async (itemId, id) => {
+  const response = await prisma.Review.findMany({
+    where: {
+      id,
+    },
+  });
+  return response;
+};
+
+//PUT /api/users/:userId/reviews/:reviewId 🔒
+const updateComment = async (reviewId, score, text) => {
+    return await prisma.Review.update({
+      where: { id: reviewId },
+      data: { score, text },
+    });
+  };
 
 // const createNewReview = async (text, score) => {
 //     const response = await prisma.Review.create({
@@ -86,7 +130,19 @@ const getItemReview = async (id, text, score) => {
 //     });
 //     return response;
 //     x;
-//   };
+//   }; 
+
+//POST /api/items/:itemId/reviews/:reviewId/comments 🔒 
+
+
+//DELETE /api/users/:userId/reviews/:reviewId 🔒
+const deleteReview = async (userId, reviewId) => {
+    return await prisma.review.delete({
+        where: {id: reviewId, 
+            userId: userId, 
+        },
+    }); 
+}; 
 
 module.exports = {
   createNewUser,
@@ -96,4 +152,9 @@ module.exports = {
   getItems,
   itemReviews,
   getItemReview,
+  getItem,
+  userReviews,
+  getItemRevId,
+  updateComment,
+  deleteReview, 
 };

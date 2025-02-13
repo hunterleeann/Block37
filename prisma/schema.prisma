@@ -17,18 +17,32 @@ model User {
   id    String     @id @default(uuid())
   email String  @unique
   password  String
+  reviews Review[]  // One-to-Many relationship
 }
 
 model Review {
   id    String     @id @default(uuid())
   itemId String //key 
+  userId String //key
   score Int  
   text  String 
   item   Item @relation(fields: [itemId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Item {  
   id    String     @id @default(uuid())
   name String  @unique 
- reviews Review[]  // One-to-Many relationship
+  reviews Review[]  // One-to-Many relationship 
 }
+
+model Comments {  
+  id    String     @id @default(uuid())
+  name String  @unique 
+  
+}
+
+
+
+
+
